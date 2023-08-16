@@ -36,7 +36,7 @@ It's worth highlighting that the privacy feature is reserved for the trade's buy
 
 1. Head over the the "OTC Trading" Tab
    
-![Screenshot (1931)](https://github.com/nauriculus/CloakZK/assets/24634581/18bdf346-cc25-456a-98c3-40ff2960c111)
+![Screenshot (1923)](https://github.com/nauriculus/CloakZK/assets/24634581/1825590a-fc79-4809-8a17-fbddced7a0f3)
 
 2. Approve and Sign the message. This ensures and is required to send private transactions through Elusiv.
 3. Connect your wallet and click on "New Trade" or put in a Trade Code into the given field and click on "New Trade" to start a new trade.
