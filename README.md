@@ -30,11 +30,10 @@ To get a local copy up and running follow these simple example steps.
 
 ### Usage
 1. Head over the the "OTC Trading" Tab
+   
 ![Screenshot (1924)](https://github.com/nauriculus/CloakZK/assets/24634581/1ca01724-1fbc-459f-956e-6e83d5e43668)
 
 3. Approve and Sign the message. This ensures and is required to send private transactions through Elusiv.
-![Screenshot (1926)](https://github.com/nauriculus/CloakZK/assets/24634581/c16ca642-a037-42aa-9894-10c9dbd55fad)
-
 4. Connect your wallet and click on "New Trade" or put in a Trade Code into the given field and click on "New Trade" to start a new trade.
 ![Screenshot (1924)](https://github.com/nauriculus/CloakZK/assets/24634581/60e09612-1ec5-46b5-9385-16a5e39fa8fd)
 
