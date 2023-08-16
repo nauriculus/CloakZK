@@ -30,22 +30,26 @@ To get a local copy up and running follow these simple example steps.
 ### Usage
 1. Head over the the "OTC Trading" Tab
    
-![Screenshot (1924)](https://github.com/nauriculus/CloakZK/assets/24634581/1ca01724-1fbc-459f-956e-6e83d5e43668)
+![Screenshot (1931)](https://github.com/nauriculus/CloakZK/assets/24634581/18bdf346-cc25-456a-98c3-40ff2960c111)
 
-3. Approve and Sign the message. This ensures and is required to send private transactions through Elusiv.
-4. Connect your wallet and click on "New Trade" or put in a Trade Code into the given field and click on "New Trade" to start a new trade.
+2. Approve and Sign the message. This ensures and is required to send private transactions through Elusiv.
+3. Connect your wallet and click on "New Trade" or put in a Trade Code into the given field and click on "New Trade" to start a new trade.
    
 ![Screenshot (1924)](https://github.com/nauriculus/CloakZK/assets/24634581/60e09612-1ec5-46b5-9385-16a5e39fa8fd)
 
-6. Wait until the data is loaded or approve incoming transaction for deposits.
+4. Wait until the data is loaded or approve incoming transaction for deposits.
    
 ![Screenshot (1928)](https://github.com/nauriculus/CloakZK/assets/24634581/8a7a33e1-f234-492b-bd24-1fadd9f6904f)
 
-7. Prior to finalizing any transaction, it's imperative to verify the deposit wallet of your counterparty. ALso note the counterparty needs to manually send tokens to the given deposit wallet for now to ensure compatibility with all type of tokens. While we do not currently provide NFT validation and authenticity checks, we are committed to ensuring the security of your trades. Implementing such validations would involve hashlist logging of collections, but due to the inherent limitations in collection size availability for trading, we are unable to provide this feature at this time. To ensure your safety, we strongly advise vigilance against potential scams and recommend thorough scrutiny of all tokens. Your caution and double-checking are key to a secure and successful trading experience.
+5. Prior to finalizing any transaction, it's imperative to verify the deposit wallet of your counterparty. ALso note the counterparty needs to manually send tokens to the given deposit wallet for now to ensure compatibility with all type of tokens. While we do not currently provide NFT validation and authenticity checks, we are committed to ensuring the security of your trades. Implementing such validations would involve hashlist logging of collections, but due to the inherent limitations in collection size availability for trading, we are unable to provide this feature at this time. To ensure your safety, we strongly advise vigilance against potential scams and recommend thorough scrutiny of all tokens.
 
-8. Confirm the trade and wait until the counterparty does the same. You can now claim your funds by using the provided TipLink.
+6. Confirm the trade and wait until the counterparty does the same.
 
 ![Screenshot (1929)](https://github.com/nauriculus/CloakZK/assets/24634581/e9c0cad2-9eee-42c7-a5ee-323c5d093db5)
+7. You can now claim your funds by using the provided button which will redirect you to the TipLink Escrow.
+
+![Screenshot (1934)](https://github.com/nauriculus/CloakZK/assets/24634581/2ad46a0e-0947-428c-9321-8a61708b9809)
+
 
 ### Installation
 
