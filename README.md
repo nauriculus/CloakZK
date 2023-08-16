@@ -14,8 +14,8 @@
 ## About CloakZK
 
  - The CloakZK OTC Tool is designed to empower traders on the Solana network. By utilizing zero-knowledge proofs, we ensure that your trading data remains confidential and only accessible to the parties involved. This innovative technology safeguards your sensitive information while delivering swift and secure trades.
-   
-   ![Screenshot (1911)](https://github.com/nauriculus/CloakZK/assets/24634581/0a265718-f494-455a-9aa5-c005b059fdfc)
+
+![]([https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png](https://github.com/nauriculus/CloakZK/assets/24634581/0a265718-f494-455a-9aa5-c005b059fdfc) | width=100)
 
 
 ## Features
