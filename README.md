@@ -1,7 +1,6 @@
 # CloakZK
-- Your gateway to private OTC trading on Solana. With zero-knowledge proofs (zk proofs) using the Elusiv SDK, this tool provides an unparalleled level of privacy and security for your OTC trades. 
-![Screenshot (1900)](https://github.com/nauriculus/CloakZK/assets/24634581/458b6b2c-3589-42fc-b00f-c98e310f8af7)
-
+- Your gateway to private OTC trading on Solana. With zero-knowledge proofs (zk proofs) using the Elusiv SDK, this tool provides an unparalleled level of privacy and security for your OTC trades.
+- 
 ## Table Of Contents
 
 * [About Cloak ZK](#about-cloakzk)
@@ -15,6 +14,8 @@
 ## About CloakZK
 
  - The CloakZK OTC Tool is designed to empower traders on the Solana network. By utilizing zero-knowledge proofs, we ensure that your trading data remains confidential and only accessible to the parties involved. This innovative technology safeguards your sensitive information while delivering swift and secure trades.
+ - ![Screenshot (1911)](https://github.com/nauriculus/CloakZK/assets/24634581/0a265718-f494-455a-9aa5-c005b059fdfc)
+
 
 ## Features
 
