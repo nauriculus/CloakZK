@@ -25,9 +25,9 @@
 - **Built for Solana**: Leverage the Solana network's scalability and performance, ensuring your OTC trades are executed swiftly and cost-effectively.
 
 ## How it works
-Currently, the trade creator enjoys the privilege of streamlined, automated, and private deposits through Elusiv. However, please note that Elusiv does not currently support NFTs. Consequently, the trade acceptor, the individual who participates in the trade via the link, is required to manually deposit tokens or NFTs into the specified deposit escrow wallet. Once both parties have confirmed the trade, an exchange of Tiplink escrow links occurs.
+- Currently, the trade creator enjoys the privilege of streamlined, automated, and private deposits through Elusiv. However, please note that Elusiv does not currently support NFTs. Consequently, the trade acceptor, the individual who participates in the trade via the link, is required to manually deposit tokens or NFTs into the specified deposit escrow wallet. Once both parties have confirmed the trade, an exchange of Tiplink escrow links occurs.
 
-It's worth highlighting that the privacy feature is reserved for the trade's buyer and seller. Funds are routed through Elusiv before being transferred to an entirely new wallet (escrow). While the NFT is still "exposed" due to the limitations of Tiplink, this exposure is mitigated. Withdrawals can be directed to any wallet, and funds can be effortlessly routed to any chosen destination. This unique approach ensures a high degree of privacy while maintaining the utmost security.
+- It's worth highlighting that the privacy feature is reserved for the trade's buyer and seller. Funds are routed through Elusiv before being transferred to an entirely new wallet (escrow). While the NFT is still "exposed" due to the limitations of Tiplink, this exposure is mitigated. Withdrawals can be directed to any wallet, and funds can be effortlessly routed to any chosen destination. This unique approach ensures a high degree of privacy while maintaining the utmost security.
 
 ### Usage
 
