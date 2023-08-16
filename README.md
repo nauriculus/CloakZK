@@ -27,16 +27,19 @@
 ## Getting Started
 To get a local copy up and running follow these simple example steps.
 
+## How it works
+Currently, the trade creator enjoys the privilege of streamlined, automated, and private deposits through Elusiv. However, please note that Elusiv does not currently support NFTs. Consequently, the trade acceptor, the individual who participates in the trade via the link, is required to manually deposit tokens or NFTs into the specified deposit escrow wallet. Once both parties have confirmed the trade, an exchange of Tiplink escrow links occurs.
+
+It's worth highlighting that the privacy feature is reserved for the trade's buyer and seller. Funds are routed through Elusiv before being transferred to an entirely new wallet (escrow). While the NFT is still "exposed" due to the limitations of Tiplink, this exposure is mitigated. Withdrawals can be directed to any wallet, and funds can be effortlessly routed to any chosen destination. This unique approach ensures a high degree of privacy while maintaining the utmost security.
+
 ### Usage
+
 1. Head over the the "OTC Trading" Tab
    
 ![Screenshot (1931)](https://github.com/nauriculus/CloakZK/assets/24634581/18bdf346-cc25-456a-98c3-40ff2960c111)
 
 2. Approve and Sign the message. This ensures and is required to send private transactions through Elusiv.
 3. Connect your wallet and click on "New Trade" or put in a Trade Code into the given field and click on "New Trade" to start a new trade.
-   
-![Screenshot (1924)](https://github.com/nauriculus/CloakZK/assets/24634581/60e09612-1ec5-46b5-9385-16a5e39fa8fd)
-
 4. Wait until the data is loaded or approve incoming transaction for deposits.
    
 ![Screenshot (1928)](https://github.com/nauriculus/CloakZK/assets/24634581/8a7a33e1-f234-492b-bd24-1fadd9f6904f)
