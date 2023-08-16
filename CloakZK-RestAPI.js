@@ -150,10 +150,8 @@ function handleDisconnect() {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
-  
-  
-  
-  
+
+
   app.post('/newTrade', async (req, res) => {
     try {
       // const origin = req.header('Origin');
@@ -161,13 +159,12 @@ function handleDisconnect() {
       //   return res.status(403).json({ error: 'Forbidden' });
       // }
   
-      // Generate a new UUID
       const tradeId = uuidv4();
       const sessionId = uuidv4();
   
       const creatorWallet = null;
       const acceptorWallet = null;
-      const timestamp = Math.floor(Date.now() / 1000); 
+      const timestamp = Math.floor(Date.now() / 1000);
       const tradeStatus = 1; 
       let tiplinkCreator = null;
       const tiplinkAcceptor = null;
@@ -185,6 +182,8 @@ function handleDisconnect() {
       
       tiplinkWalletCreator = tiplink.keypair.publicKey.toBase58();
       
+      
+  
       const query = `
         INSERT INTO cloakTrades (
           TRADE_ID,
@@ -249,7 +248,6 @@ function handleDisconnect() {
       if (rows.length === 1) {
         const tradeInfo = rows[0];
         const tradeData = {};
-  
         if (tradeInfo.CREATOR_TOKEN === sessionId) {
           tradeData.wallet = tradeInfo.TIPLINK_WALLET_ACCEPTOR;
         }
@@ -276,7 +274,8 @@ function handleDisconnect() {
         SELECT
           CREATOR_ACCEPT,
           ACCEPTOR_ACCEPT,
-          TRADE_STATUS
+          TRADE_STATUS,
+          CANCELED
         FROM cloakTrades
         WHERE TRADE_ID = ?;
       `;
@@ -286,7 +285,9 @@ function handleDisconnect() {
       if (rows.length === 1) {
         const tradeInfo = rows[0];
   
-        if (tradeInfo.CREATOR_ACCEPT && tradeInfo.ACCEPTOR_ACCEPT) {
+        if (tradeInfo.CANCELED) {
+          res.status(200).json({ status: 'Canceled' });
+        } else if (tradeInfo.CREATOR_ACCEPT && tradeInfo.ACCEPTOR_ACCEPT) {
           if (tradeInfo.TRADE_STATUS) {
             await connection.promise().query(
               'UPDATE cloakTrades SET TRADE_STATUS = ? WHERE TRADE_ID = ?',
@@ -294,16 +295,16 @@ function handleDisconnect() {
             );
           }
   
-          res.status(200).json({ status: true });
+          res.status(200).json({ status: 'Approved' });
         } else {
-          res.status(200).json({ status: false });
+          res.status(200).json({ status: 'Pending' });
         }
       } else {
         res.status(400).json({ error: 'Invalid tradeId' });
       }
     } catch (err) {
       console.error('Error checking trade acceptance:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(200).json({ status: 'Internal Error' });
     }
   });
 
@@ -351,6 +352,15 @@ function handleDisconnect() {
             }
           }
   
+          // Check if both parties have confirmed
+          if (tradeInfo.CREATOR_ACCEPT && tradeInfo.ACCEPTOR_ACCEPT) {
+            // Update TRADE_STATUS to false
+            await connection.promise().query(
+              'UPDATE cloakTrades SET TRADE_STATUS = ? WHERE TRADE_ID = ?',
+              [false, tradeId]
+            );
+          }
+  
           res.status(200).json({ status: 'Updated' });
         } else {
           res.status(400).json({ error: 'Invalid trade' });
@@ -364,12 +374,42 @@ function handleDisconnect() {
     }
   });
 
+  app.post('/cancelTrade', async (req, res) => {
+    try {
+      const { sessionId, tradeId } = req.body;
+      const updateQuery = `
+        UPDATE cloakTrades
+        SET
+          TRADE_STATUS = 0,
+          CREATOR_ACCEPT = 0,
+          ACCEPTOR_ACCEPT = 0,
+          CANCELED = 1
+        WHERE
+          (CREATOR_TOKEN = ? OR ACCEPTOR_TOKEN = ?) AND
+          TRADE_STATUS = 1 AND
+          TRADE_ID = ?;
+      `;
+  
+      const result = await connection.promise().query(updateQuery, [sessionId, sessionId, tradeId]);
+  
+      if (result[0].affectedRows > 0) {
+        res.status(200).json({ success: 'Trade canceled successfully' });
+      } else {
+        res.status(400).json({ error: 'Invalid sessionId or trade cannot be canceled' });
+      }
+    } catch (err) {
+      console.error('Error canceling trade:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
   app.post('/requestFunds', async (req, res) => {
     try {
       const { sessionId } = req.body;
   
       const checkQuery = `
         SELECT
+          CANCELED,
           TIPLINK_CREATOR,
           TIPLINK_ACCEPTOR,
           CREATOR_TOKEN,
@@ -386,7 +426,20 @@ function handleDisconnect() {
       if (rows.length === 1) {
         const tradeInfo = rows[0];
         const tradeData = {};
-        //&& tradeInfo.TRADE_STATUS <- removed this for now so when we detect that both parties confirmed the trade we close the trade so they can't close anymore but funds still can be claimed even if the trade state is set to FALSE.
+
+        //handle if trade was canceled and user wants to get own deposit link back
+        if(tradeInfo.CANCELED) {
+            if (tradeInfo.CREATOR_TOKEN === sessionId) {
+              tradeData.link = tradeInfo.TIPLINK_CREATOR;
+            }
+    
+            if (tradeInfo.ACCEPTOR_TOKEN === sessionId ) {
+              tradeData.link = tradeInfo.TIPLINK_ACCEPTOR;
+            }
+    
+            res.status(200).json(tradeData);
+        }
+        if(!tradeInfo.CANCELED) {
         if (tradeInfo.CREATOR_ACCEPT && tradeInfo.ACCEPTOR_ACCEPT) { // Check flags and status
           if (tradeInfo.CREATOR_TOKEN === sessionId) {
             tradeData.link = tradeInfo.TIPLINK_ACCEPTOR;
@@ -400,6 +453,7 @@ function handleDisconnect() {
         } else {
           res.status(400).json({ error: 'Trade not fully accepted or not approved yet' });
         }
+        }
       } else {
         res.status(400).json({ error: 'Invalid sessionId' });
       }
@@ -412,5 +466,5 @@ function handleDisconnect() {
 const server = https.createServer(options, app);
 
 server.listen(port, () => {
-  console.log(`CloakZK API is running on port ${port}`);
+  console.log(`RLink API is running on port ${port}`);
 });
