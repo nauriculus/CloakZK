@@ -31,7 +31,6 @@ import { useState, useEffect } from 'react';
 let privateTransferTransaction: string = null;
 let topUpTransaction: string = null;
 let sessionId: string = null;
-let counterWallet: string = null;
 let tradeId: string = null;
 let walletId: string = null;
 
@@ -73,12 +72,6 @@ transition: box-shadow 0.2s ease-in-out;
 export interface TradeProps {
   connection: anchor.web3.Connection;
 }
-
-
-
-
-
-
 
 const OTC = (props: TradeProps) => {
 
@@ -187,6 +180,7 @@ const OTC = (props: TradeProps) => {
   const tradingCodeInputRef = useRef(null);
   const [solAmount, setSolAmount] = useState('');
   const [tradeStatus, setTradeStatus] = useState('Pending');
+  const [counterWallet, setCounterWallet] = useState(null);
   const { signTransaction } = useWallet();
   const [copied, setCopied] = useState(false);
   
@@ -290,8 +284,9 @@ const OTC = (props: TradeProps) => {
   async function listenForTradeStatus() {
     const tradeAccepted = await checkTradeStatus(tradeId);
     
-    if(counterWallet === "Not available yet") {
+    if (counterWallet === null || counterWallet == null) {
 
+      console.log("Checking for counterWallet");
       const payload = {
         sessionId: sessionId,
       };
@@ -305,9 +300,10 @@ const OTC = (props: TradeProps) => {
        })
       .then(response => response.json())
       .then(data => {
-        counterWallet = null;
+        setCounterWallet(null);
         if(data.wallet !== null) {
-        counterWallet = data.wallet;
+        console.log(data.wallet);
+        setCounterWallet(data.wallet);
         }
        })
 
@@ -323,16 +319,22 @@ const OTC = (props: TradeProps) => {
         tradeId = null;
         console.error("Error joining trade:", error);
       });
-
     }
-    if(tradeAccepted) {
+
+    if (tradeAccepted === 'Approved') {
       setTradeStatus("Accepted");
       setShowSuccessMessage(true);
       setSuccessMessage("Trade was accepted by both parties");
       setShowFundsButton(true);
-    } 
-    else {
+    } else if (tradeAccepted === 'Pending') {
       setTradeStatus("Pending");
+      setTimeout(listenForTradeStatus, 10000);
+    } else if (tradeAccepted === 'Canceled') {
+      setTradeStatus("Canceled");
+      setShowSuccessMessage(true);
+      setSuccessMessage("Trade was canceled by one party");
+      setShowFundsButton(true);
+    } else {
       setTimeout(listenForTradeStatus, 10000);
     }
   }
@@ -374,7 +376,6 @@ const OTC = (props: TradeProps) => {
 
   async function checkTradeStatus(tradeId) {
     try {
-
       const payload = {
         tradeId: tradeId
       };
@@ -390,19 +391,17 @@ const OTC = (props: TradeProps) => {
 
       const response = await fetch('https://binaramics.com:2222/checkTradeStatus', options);
       if (!response.ok) {
-        return false;
+        return "Error";
       }
 
       const data = await response.json();
       if (response.ok) {
         if (data.status !== undefined) {
           return data.status; // Return true or false directly
-        } else {
-          return false;
         }
       }
     } catch (error) {
-      return false;
+      return "Error";
     }
   }
 
@@ -418,9 +417,7 @@ const OTC = (props: TradeProps) => {
           setIsLoading(true);
 
           const payload = {
-          
           };
-
           const options = {
             method: 'POST',
             headers: {
@@ -445,7 +442,7 @@ const OTC = (props: TradeProps) => {
           tradeId = null;
           tradeId = data.tradeId;
 
-          changeLoadingAnimationText("Building transaction... Waiting for your approval");
+          changeLoadingAnimationText("Waiting for your approval");
           const sig = await topup(elusiv, parsedAmount * LAMPORTS_PER_SOL, 'LAMPORTS');
           
           topUpTransaction = sig.signature;
@@ -478,7 +475,6 @@ const OTC = (props: TradeProps) => {
 
           const sigSend = await elusiv.sendElusivTx(sendTx)
           privateTransferTransaction = sigSend.signature;
-          console.log(`Send complete with sig ${sigSend.signature}`)
 
           changeLoadingAnimationText('Deposited ' + parsedAmount + ' SOL successfully');
 
@@ -486,6 +482,8 @@ const OTC = (props: TradeProps) => {
           setTimeout(() => {
             setIsLoading(false);
             setTradingDashboardOpen(true);
+            setCounterWallet(null);
+            listenForTradeStatus();
           }, 2000); // Adjust the delay time as needed (in milliseconds)
         }
       }
@@ -518,10 +516,6 @@ const OTC = (props: TradeProps) => {
     //  solanaPrice = solanaPriceObj.usd;
       
     //  getTransactionDetails(transaction);
-
-     
-      
-
     } catch (e) {
       setIsLoading(false);
       setTradeButtonLoad(false);
@@ -619,13 +613,14 @@ const OTC = (props: TradeProps) => {
                  })
                 .then(response => response.json())
                 .then(data => {
-                  counterWallet = null;
-                  counterWallet = data.wallet;
+                  setCounterWallet(null);
+                  setCounterWallet(data.wallet);
                   changeLoadingAnimationText('Fetching data...');
                   
                   setTimeout(() => {
                     setIsLoading(false);
                     setTradingDashboardOpen(true);
+                    listenForTradeStatus();
                   }, 5000);
 
                 })
@@ -741,9 +736,40 @@ const OTC = (props: TradeProps) => {
     }
   }
   
-  function handleCancel() {
-    // Adding functions right now <3
-    console.log('Trade canceled!');
+  async function handleCancel() {
+    const payload = {
+      sessionId: sessionId,
+      tradeId: tradeId
+    };
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        accept: 'application/json, text/plain, */*',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    const response = await fetch('https://binaramics.com:2222/cancelTrade', options);
+    console.log(response);
+    if (!response.ok) {
+      setShowErrorMessage(true);
+      setErrorMessage("Trade was not canceled");
+    }
+
+    const data = await response.json(); 
+    if (data.success) {
+      setShowSuccessMessage(true);
+      listenForTradeStatus();
+      setSuccessMessage("Trade was canceled by you");
+      setShowFundsButton(true);
+    } 
+    else {
+      setShowErrorMessage(true);
+      setErrorMessage("Trade was not canceled");
+    }
+  
   }
 
 
@@ -980,7 +1006,7 @@ const OTC = (props: TradeProps) => {
                       <div>
                        
                        
-                   <div className="data-box" onMouseLeave={() => resetInfoBoxes()}>
+                   <div className="data-amount" onMouseLeave={() => resetInfoBoxes()}>
                   <div className="data-point">
                     <img
                       src="../amount.png" 
