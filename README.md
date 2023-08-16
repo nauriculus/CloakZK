@@ -43,6 +43,8 @@ It's worth highlighting that the privacy feature is reserved for the trade's buy
 
 5. Prior to finalizing any transaction, it's imperative to verify the deposit wallet of your counterparty. ALso note the counterparty needs to manually send tokens to the given deposit wallet for now to ensure compatibility with all type of tokens. While we do not currently provide NFT validation and authenticity checks, we are committed to ensuring the security of your trades. Implementing such validations would involve hashlist logging of collections, but due to the inherent limitations in collection size availability for trading, we are unable to provide this feature at this time. To ensure your safety, we strongly advise vigilance against potential scams and recommend thorough scrutiny of all tokens.
 
+![Screenshot (1911)](https://github.com/nauriculus/CloakZK/assets/24634581/66a0ffa1-9e91-4633-ac72-e87849f577bb)
+
 6. Confirm the trade and wait until the counterparty does the same.
 
 ![Screenshot (1929)](https://github.com/nauriculus/CloakZK/assets/24634581/e9c0cad2-9eee-42c7-a5ee-323c5d093db5)
