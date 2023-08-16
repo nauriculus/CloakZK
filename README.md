@@ -4,9 +4,9 @@
 ## Table Of Contents
 
 * [About Cloak ZK](#about-cloakzk)
-* [Getting Started](#getting-started)
-  * [Installation](#installation)
+* [How it works](#how-it-works)
   * [Usage](#usage)
+  * [Installation](#installation)
 * [License](#license)
 * [Authors](#authors)
 * [Resources](#resources)
