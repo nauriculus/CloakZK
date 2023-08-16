@@ -24,9 +24,6 @@
 - **User-Friendly Interface**: Our intuitive user interface makes it easy for traders of all experience levels to navigate and engage in private OTC trading seamlessly.
 - **Built for Solana**: Leverage the Solana network's scalability and performance, ensuring your OTC trades are executed swiftly and cost-effectively.
 
-## Getting Started
-To get a local copy up and running follow these simple example steps.
-
 ## How it works
 Currently, the trade creator enjoys the privilege of streamlined, automated, and private deposits through Elusiv. However, please note that Elusiv does not currently support NFTs. Consequently, the trade acceptor, the individual who participates in the trade via the link, is required to manually deposit tokens or NFTs into the specified deposit escrow wallet. Once both parties have confirmed the trade, an exchange of Tiplink escrow links occurs.
 
