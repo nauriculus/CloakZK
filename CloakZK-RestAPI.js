@@ -69,7 +69,10 @@ function handleDisconnect() {
   app.post('/checkTrade', async (req, res) => {
     try {
       const { tradeId } = req.body;
-      
+      if(tradeId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
       const checkQuery = `
         SELECT COUNT(*) AS count
         FROM cloakTrades
@@ -90,6 +93,10 @@ function handleDisconnect() {
   app.post('/joinTrade', async (req, res) => {
     try {
       const { tradeId } = req.body;
+      if(tradeId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
       const checkQuery = `
         SELECT *
         FROM cloakTrades
@@ -232,7 +239,12 @@ function handleDisconnect() {
   app.post('/getCounterWallet', async (req, res) => {
     try {
       const { sessionId } = req.body;
-  
+
+      if(sessionId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
+      
       const checkQuery = `
         SELECT
           TIPLINK_WALLET_CREATOR,
@@ -269,7 +281,12 @@ function handleDisconnect() {
   app.post('/checkTradeStatus', async (req, res) => {
     try {
       const { tradeId } = req.body;
-  
+
+      if(tradeId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
+      
       const checkQuery = `
         SELECT
           CREATOR_ACCEPT,
@@ -311,6 +328,16 @@ function handleDisconnect() {
   app.post('/confirmTrade', async (req, res) => {
     try {
       const { sessionId, tradeId } = req.body;
+
+      if(tradeId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
+
+      if(sessionId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
       const checkQuery = `
         SELECT
           CREATOR_TOKEN,
@@ -377,6 +404,16 @@ function handleDisconnect() {
   app.post('/cancelTrade', async (req, res) => {
     try {
       const { sessionId, tradeId } = req.body;
+
+      if(sessionId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
+
+      if(tradeId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
       const updateQuery = `
         UPDATE cloakTrades
         SET
@@ -406,7 +443,11 @@ function handleDisconnect() {
   app.post('/requestFunds', async (req, res) => {
     try {
       const { sessionId } = req.body;
-  
+      if(sessionId === null) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+      }
+      
       const checkQuery = `
         SELECT
           CANCELED,
