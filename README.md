@@ -80,4 +80,3 @@ We reserve the right to modify this disclaimer at any time.
 ## Resources
 * [Elusiv](https://elusiv.io/)
 * [TipLink](https://tiplink.io)
-* [IronForge](https://www.ironforge.cloud)
