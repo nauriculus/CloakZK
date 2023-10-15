@@ -55,6 +55,7 @@
 
 # Fast Swap 
 - We over to fast swap USDC/USDT directly into SOL for faster trading!
+  
 ![Screenshot (2051)](https://github.com/nauriculus/CloakZK/assets/24634581/7169fe92-d401-4a85-897c-a9e5d43f2090)
 
 ### Installation
