@@ -1,3 +1,308 @@
+/* */
+
+.wallet-adapter-button {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  width: 200px;
+  align-items: center;
+  justify-content: center; /* Move the text to the right */
+  font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  height: 40px;
+  margin-bottom: 10px;
+  line-height: 48px;
+  padding: 0 15px;
+  border-radius: 15px;
+  transition: 0.5s;
+}
+
+.wallet-adapter-button-trigger {
+  background-color: rgba(108,39,255,255);
+  border: none;
+}
+
+.wallet-adapter-button:not([disabled]):focus-visible {
+  outline-color: white;
+}
+
+.wallet-adapter-button:not([disabled]):hover {
+  background-color: #42199c;
+}
+
+.wallet-adapter-button[disabled] {
+  background: #404144;
+  color: #999;
+  border: none;
+  cursor: not-allowed;
+}
+
+.wallet-adapter-button-end-icon,
+.wallet-adapter-button-start-icon,
+.wallet-adapter-button-end-icon img,
+.wallet-adapter-button-start-icon img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.wallet-adapter-button-end-icon {
+  margin-left: 12px;
+}
+
+.wallet-adapter-button-start-icon {
+  margin-right: 12px;
+  margin-bottom: auto;
+}
+
+.wallet-adapter-collapse {
+  width: 100%;
+}
+
+.wallet-adapter-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.wallet-adapter-dropdown-list {
+  position: absolute;
+  z-index: 99;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-row-gap: 10px;
+  padding: 10px;
+  top: 100%;
+  right: 0;
+  margin: 0;
+  list-style: none;
+  background: #2c2d30;
+  border-radius: 10px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
+  font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.wallet-adapter-dropdown-list-active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(10px);
+}
+
+.wallet-adapter-dropdown-list-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-sizing: border-box;
+  padding: 0 20px;
+  width: 100%;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  height: 37px;
+  color: #fff;
+}
+
+.wallet-adapter-dropdown-list-item:not([disabled]):hover {
+  background-color: #1a1f2e;
+}
+
+.wallet-adapter-modal-collapse-button svg {
+  align-self: center;
+  fill: #999;
+}
+
+.wallet-adapter-modal-collapse-button.wallet-adapter-modal-collapse-button-active svg {
+  transform: rotate(180deg);
+  transition: transform ease-in 150ms;
+}
+
+.wallet-adapter-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity linear 150ms;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  overflow-y: auto;
+}
+
+.wallet-adapter-modal.wallet-adapter-modal-fade-in {
+  opacity: 1;
+}
+
+.wallet-adapter-modal-button-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 12px;
+  cursor: pointer;
+  background: #1a1f2e;
+  border: none;
+  border-radius: 50%;
+}
+
+.wallet-adapter-modal-button-close:focus-visible {
+  outline-color: white;
+}
+
+.wallet-adapter-modal-button-close svg {
+  fill: #777;
+  transition: fill 200ms ease 0s;
+}
+
+.wallet-adapter-modal-button-close:hover svg {
+  fill: #fff;
+}
+
+.wallet-adapter-modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.wallet-adapter-modal-container {
+  display: flex;
+  margin: 3rem;
+  min-height: calc(100vh - 6rem); /* 100vh - 2 * margin */
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .wallet-adapter-modal-container {
+      margin: 1rem;
+      min-height: calc(100vh - 2rem); /* 100vh - 2 * margin */
+  }
+}
+
+.wallet-adapter-modal-wrapper {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  z-index: 1050;
+  max-width: 400px;
+  border-radius: 10px;
+  background: #10141f;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6);
+  font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  flex: 1;
+}
+
+.wallet-adapter-modal-wrapper .wallet-adapter-button {
+  width: 100%;
+}
+
+.wallet-adapter-modal-title {
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 36px;
+  margin: 0;
+  padding: 64px 48px 48px 48px;
+  text-align: center;
+  color: #fff;
+}
+
+@media (max-width: 374px) {
+  .wallet-adapter-modal-title {
+      font-size: 18px;
+  }
+}
+
+.wallet-adapter-modal-list {
+  margin: 0 0 12px 0;
+  padding: 0;
+  width: 100%;
+  list-style: none;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button {
+  font-weight: 400;
+  border-radius: 0;
+  font-size: 18px;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button-end-icon,
+.wallet-adapter-modal-list .wallet-adapter-button-start-icon,
+.wallet-adapter-modal-list .wallet-adapter-button-end-icon img,
+.wallet-adapter-modal-list .wallet-adapter-button-start-icon img {
+  width: 28px;
+  height: 28px;
+}
+
+.wallet-adapter-modal-list .wallet-adapter-button span {
+  margin-left: auto;
+  font-size: 14px;
+  opacity: .6;
+}
+
+.wallet-adapter-modal-list-more {
+  cursor: pointer;
+  border: none;
+  padding: 12px 24px 24px 12px;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  color: #fff;
+}
+
+.wallet-adapter-modal-list-more svg {
+  transition: all 0.1s ease;
+  fill: rgba(255, 255, 255, 1);
+  margin-left: 0.5rem;
+}
+
+.wallet-adapter-modal-list-more-icon-rotate {
+  transform: rotate(180deg);
+}
+
+.wallet-adapter-modal-middle {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px 24px 24px;
+  box-sizing: border-box;
+}
+
+.wallet-adapter-modal-middle-button {
+  display: block;
+  cursor: pointer;
+  margin-top: 48px;
+  width: 100%;
+  background-color: #512da8;
+  padding: 12px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+}
+
+/* */
+
 .trade-cards-container {
   display: flex;
   justify-content: center;
@@ -284,9 +589,11 @@ p.copy-message {
 
 .heading-main {
   font-size: 30px;
+  
   font-weight: bold;
   justify-content: center;
   text-align: center;
+  
 }
 
 .powered-by {
@@ -302,7 +609,12 @@ p.copy-message {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: -18px;
+  margin-bottom: 13px;
+  margin-left: 3px;
+}
+.swap-animation {
+  width: 70px;
+  height: auto;
 }
 
 .logo {
@@ -463,6 +775,186 @@ p.copy-message {
   display: block;
 }
 
+.swap-modal h1 {
+  font-size: 50px;
+  color: #ffffff;
+}
+
+.token-list {
+  margin-top: 50px;
+  justify-content: space-between;
+  align-items: space-between;
+}
+.swap-menu.selected {
+  background-color: black;
+  color: #ffffff;
+}
+
+.swap-icon-left {
+  width: 40px;
+  align-items: space-between;
+  height: auto;
+}
+
+.swap-icon-right {
+  width: 40px;
+  align-items: space-between;
+  height: auto;
+}
+
+/* Style for the label "Select a token" */
+.token-list label {
+  font-size: 16px;
+ 
+  margin-bottom: 100px;
+  color: #a8a8a8;
+}
+
+/* Style for the token select dropdown */
+.token-list select {
+  width: 60%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: transparent;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+/* Style for the option label (both icon and name) */
+.custom-select .option {
+  display: flex;
+  align-items: center;
+  background: transparent !important; /* Ensure transparency */
+  padding: 8px; /* Add padding for spacing */
+  color: white; /* Text color */
+}
+
+
+/* Style for the icon in each option */
+.custom-select .option img {
+  width: 24px;
+  margin-right: 8px;
+}
+
+/* Style for the name of the token in each option */
+.custom-select .option span {
+  font-size: 16px;
+  color: white; /* Text color */
+}
+
+/* Style for the selected value (placeholder or selected option) */
+.custom-select .single-value {
+  display: flex;
+  align-items: center;
+  background: transparent; /* Set the background color to transparent */
+}
+
+/* Style for the arrow icon in the select */
+.custom-select .indicator {
+  color: white; /* Arrow icon color */
+}
+/* Style for the image */
+.token-list img {
+  max-width: 100px; /* Adjust the size as needed */
+  margin-top: 10px;
+}
+
+/* Style for the input field */
+.token-list input {
+  width: 60%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: transparent;
+  margin-top: 10px;
+}
+
+/* Style for the paragraph displaying SOL after swap */
+.token-list p {
+  font-size: 18px;
+  color: #ffffff;
+  margin-top: 10px;
+}
+
+/* Style for the confirmation button */
+.token-list button {
+  background-color: #1cbd65;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease; /* Add a smooth transition effect */
+}
+
+.token-list button:hover {
+  background-color: #12723d;
+}
+
+.close-button {
+  position: absolute;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  width: 200px;
+  align-items: center;
+  justify-content: center; /* Move the text to the right */
+  font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 48px;
+  transition: 0.5s;
+  bottom: 10px; /* Adjust the desired distance from the bottom */
+  right: 10px; /* Adjust the desired distance from the right */
+}
+
+/* Style for the loading message */
+.token-list p.loading-message {
+  color: #555;
+  font-style: italic;
+}
+
+.swap-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 600px;
+  width: 600px;
+  position: center;
+  transform: translate(-50%, -50%);
+  
+  padding: 2rem; 
+  backdrop-filter: blur(10px);
+  background: #050405;
+  border: none; 
+  border-radius: 10px;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.left-icon {
+  max-width: 100px; /* Adjust the size as needed */
+}
+
+/* Style for the "For" text */
+.for {
+  font-size: 20px;
+  margin-bottom: -15px;
+  color: #ffffff; /* Adjust the color as needed */
+}
+
+/* Style for the right icon (SOL) */
+.right-icon {
+  max-width: 100px; /* Adjust the size as needed */
+}
+
 .dashboard-modal {
   position: absolute;
   top: 45%;
@@ -591,6 +1083,11 @@ p.copy-message {
   align-items: center;
 }
 
+.button-spacer {
+ margin-right: 10px;
+}
+
+
 .data-text,
 .data-link {
   font-size: 16px;
@@ -598,6 +1095,12 @@ p.copy-message {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.wallet-main-container {
+  display: flex;
+  justify-content: center;
+  margin-top: -60px;
 }
 
 .is-flex-justify-center {

@@ -5,25 +5,19 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./Home";
 import OTCDashboard from "./otc/test";
 
-import * as anchor from "@project-serum/anchor";
 import { clusterApiUrl } from "@solana/web3.js";
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 
+import * as anchor from "@coral-xyz/anchor";
+
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { PhantomWalletAdapter, SolflareWalletAdapter, TrustWalletAdapter } from '@solana/wallet-adapter-wallets';
 import {
-  getPhantomWallet,
-  getSlopeWallet,
-  getSolflareWallet,
-  getSolletWallet,
-  getSolletExtensionWallet,
-} from "@solana/wallet-adapter-wallets";
+  WalletModalProvider,
+  WalletDisconnectButton,
+  WalletMultiButton
+} from '@solana/wallet-adapter-react-ui';
 
-
-import { WalletDialogProvider } from "@solana/wallet-adapter-material-ui";
-
-import {
-  ConnectionProvider,
-  WalletProvider,
-} from "@solana/wallet-adapter-react";
 
 import { createTheme, ThemeProvider } from "@material-ui/core";
 
@@ -66,35 +60,28 @@ const theme = createTheme({
   },
 });
 
-const Main = () => {
-  return (
-     <Home/>
-  );
-};
-
 const OTCDashboardPage = () => {
   const endpoint = useMemo(() => clusterApiUrl(network), []);
-
   const wallets = useMemo(
     () => [
-      getPhantomWallet(),
-      getSlopeWallet(),
-      getSolflareWallet(),
-      getSolletWallet({ network }),
-      getSolletExtensionWallet({ network }),
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new TrustWalletAdapter(),
     ],
-    []
+    [network]
   );
+
+
   return (
-    <ThemeProvider theme={theme}>
-      <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider wallets={wallets} autoConnect={true}>
-          <WalletDialogProvider>
-            <OTCDashboard connection={connection} />
-          </WalletDialogProvider>
-        </WalletProvider>
-      </ConnectionProvider>
-    </ThemeProvider>
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets}>
+        <WalletModalProvider>
+       
+        <OTCDashboard connection={connection} />
+        </WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+           
   );
 };
 
@@ -102,8 +89,7 @@ const App = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" component={Main}></Route>
-        <Route exact path="/otc" component={OTCDashboardPage}></Route>
+        <Route exact path="/" component={OTCDashboardPage}></Route>
       </Switch>
     </Router>
   );

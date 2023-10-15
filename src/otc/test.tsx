@@ -6,7 +6,6 @@ import * as anchor from "@project-serum/anchor";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import Nav from "../partials/Nav";
 import Footer from "../partials/Footer";
-import { shortenAddress } from "../candy-machine";
 import Box from "@material-ui/core/Box";
 import Modal from "@material-ui/core/Modal";
 import Fade from "@material-ui/core/Fade";
@@ -20,8 +19,16 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { Elusiv, SEED_MESSAGE,TokenType, TopupTxData   } from '@elusiv/sdk';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL, ConfirmedSignatureInfo  } from '@solana/web3.js';
-import { WalletDialogButton } from "@solana/wallet-adapter-material-ui";
 
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { PhantomWalletAdapter, SolflareWalletAdapter, TrustWalletAdapter } from '@solana/wallet-adapter-wallets';
+import {
+  WalletMultiButton
+} from '@solana/wallet-adapter-react-ui';
+
+import { getOrca, OrcaFarmConfig, OrcaPoolConfig } from "@orca-so/sdk";
+import Decimal from "decimal.js";
 
 import { css } from '@emotion/react';
 import { BounceLoader } from 'react-spinners';
@@ -34,40 +41,6 @@ let sessionId: string = null;
 let tradeId: string = null;
 let walletId: string = null;
 
-const ConnectButton = styled(WalletDialogButton)`
-/* Add your custom styles here */
-padding: 0.5rem 1.25rem;
-border-radius: 8px;
-color: #fff;
-font-size: 16px;
-border: none;
-cursor: pointer;
-box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
-transition: box-shadow 0.2s ease-in-out;
-
-&:hover {
-  animation: glow 1s ease-in-out infinite;
-}
-
-@keyframes glow {
-  0% {
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(108,39,255,255);
-  }
-  100% {
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
-  }
-}
-`;
-
-
-  const CenteredContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
 export interface TradeProps {
   connection: anchor.web3.Connection;
@@ -93,6 +66,7 @@ const OTC = (props: TradeProps) => {
   const [isTransactionInfoOpen, setTransactionInfoOpen] = useState(false);
   const [isConfirmationInfoOpen, setConfirmationInfoOpen] = useState(false);
   const [isTransactionCostInfoOpen, setTransactionCostInfoOpen] = useState(false);
+  const [clickedSwap, setClickedSwap] = useState(false);
 
   const useLoadingAnimation = ({ isFinished }) => {
     return (
@@ -119,11 +93,8 @@ const OTC = (props: TradeProps) => {
         const encodedMessage = new TextEncoder().encode(SEED_MESSAGE);
         const seed = await signMessage(encodedMessage);
 
-
-     //   let rpcHost = "https://alien-lingering-owl.solana-mainnet.quiknode.pro/5ac3510e008f3d8bc524613775744dc354bf629e/";
-
-      let rpcHost =
-      "https://solana.coin.ledger.com/";
+        let rpcHost =
+        "https://solana.coin.ledger.com/";
 
         const connection = new Connection(rpcHost, {
           commitment: "confirmed",
@@ -161,6 +132,17 @@ const OTC = (props: TradeProps) => {
     }
   };
 
+  function shortenAddress(address, charsCount = 6) {
+    if (address.length <= charsCount * 2) {
+      return address; // If the address is already short, return it as-is
+    }
+  
+    const start = address.slice(0, charsCount);
+    const end = address.slice(-charsCount);
+  
+    return `${start}...${end}`;
+  }
+
   function shortenTransactionId(transactionId: string | null): string {
     if (transactionId === null) {
       return "";
@@ -175,15 +157,22 @@ const OTC = (props: TradeProps) => {
   const [tradingDashboard, setTradingDashboardOpen] = useState(false);
   const [buttonisLoading, setbuttonIsLoading] = useState(false);
   const [TradeButtonIsLoading, setTradeButtonLoad] = useState(false);
+  const [SwapButtonIsLoading, setSwapButtonLoad] = useState(false);
+  const [selectedToken, setSelectedToken] = useState('USDC');
+  
   const [showFundsButton, setShowFundsButton] = useState(false);
   const loadingText = useLoadingAnimation({ isFinished: isTransactionFinished }); 
   const tradingCodeInputRef = useRef(null);
   const [solAmount, setSolAmount] = useState('');
   const [tradeStatus, setTradeStatus] = useState('Pending');
   const [counterWallet, setCounterWallet] = useState(null);
-  const { signTransaction } = useWallet();
+  const { signTransaction, sendTransaction } = useWallet();
   const [copied, setCopied] = useState(false);
   
+  const [amountToSwap, setAmountToSwap] = useState(0);
+  const [solAfterSwap, setSolAfterSwap] = useState(0);
+
+
   const getTransactionDetails = async (txid: any) => {
     try {
       const payload = {
@@ -339,6 +328,12 @@ const OTC = (props: TradeProps) => {
     }
   }
 
+  const tokenList = [
+    { id: 1, name: 'USDC' },
+    { id: 2, name: 'USDT' },
+    // Add more tokens as needed
+  ];
+
   async function getFunds() {
     try {
       const payload = {
@@ -405,13 +400,55 @@ const OTC = (props: TradeProps) => {
     }
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const connection = new Connection("https://solana.coin.ledger.com", "confirmed");
+  
+        const orca = getOrca(connection);
+  
+        let orcaPool = null;
+  
+        if (selectedToken === "USDC") {
+          orcaPool = orca.getPool(OrcaPoolConfig.SOL_USDC);
+        }
+        if (selectedToken === "USDT") {
+          orcaPool = orca.getPool(OrcaPoolConfig.SOL_USDT);
+        }
+  
+        const solToken = orcaPool.getTokenB();
+        if (amountToSwap >= 0.05) {
+          const solAmount = new Decimal(amountToSwap);
+          const quote = await orcaPool.getQuote(solToken, solAmount);
+          const orcaAmount = quote.getMinOutputAmount();
+  
+          setSolAfterSwap(orcaAmount.toNumber());
+        }
+        else {
+          setSolAfterSwap(0);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchData(); // Call the async function
+  
+  }, [amountToSwap]);
+
+  const handleSwapAmountChange = async (amount: number) => {
+    setAmountToSwap(amount);
+    console.log(amountToSwap);
+    
+  }
+
   const startNewTrade = async (event: any) => {
     try {
       
       const parsedAmount = parseFloat(solAmount); // Parse the input as a number
       setTradeButtonLoad(true);
       
-      if (parsedAmount > 0) {
+      if (parsedAmount > 0.025) {
         if (elusiv) {
           setIsTransactionFinished(false);
           setIsLoading(true);
@@ -533,8 +570,151 @@ const OTC = (props: TradeProps) => {
       .catch(() => setCopied(false));
   };
 
+  const performSwap = async (event: any) => {
+    try {
+
+    if(amountToSwap <= 0.05) {
+      setSwapButtonLoad(false);
+      setShowErrorMessage(true);
+      setErrorMessage(`Invaild amount. Minimum of .05 required`);
+      return;
+    }
+    const connection = new Connection("https://solana.coin.ledger.com", "confirmed");
+
+    const orca = getOrca(connection);
+
+    let orcaPool = null;
+
+    if(selectedToken === "USDC") {
+    orcaPool = orca.getPool(OrcaPoolConfig.SOL_USDC);
+    }
+    if(selectedToken === "USDT") {
+      orcaPool = orca.getPool(OrcaPoolConfig.SOL_USDT);
+      }
+
+
+    const solToken = orcaPool.getTokenB();
+    const solAmount = new Decimal(amountToSwap);
+    const quote = await orcaPool.getQuote(solToken, solAmount);
+    const orcaAmount = quote.getMinOutputAmount();
+
+    console.log(`Swap ${solAmount.toString()} SOL for at least ${orcaAmount.toNumber()} `);
+
+    orcaPool.swap(publicKey, solToken, solAmount, orcaAmount).then((swapPayload) => {
+      const trans = swapPayload.transaction;
+
+      connection.getLatestBlockhash().then(obj => {
+          trans.recentBlockhash = obj.blockhash;
+          //
+          sendTransaction(trans, connection, { signers: swapPayload.signers }).then(signedTransaction => {
+              connection.confirmTransaction(signedTransaction, 'processed').then(tx => {
+                
+                setSuccessMessage("Swapped " + amountToSwap + " " + selectedToken + " for " + orcaAmount.toNumber() + " SOL");
+                setShowSuccessMessage(true);
+                setSwapButtonLoad(false);
+                setClickedSwap(false);
+                
+              }).catch(e => {
+                setSwapButtonLoad(false);
+               
+                setClickedSwap(false);
+                setShowErrorMessage(true);
+                setErrorMessage(`Error when swapping`);
+              });
+          }).catch(e => {
+            setSwapButtonLoad(false);
+           
+            setClickedSwap(false);
+            setShowErrorMessage(true);
+            setErrorMessage(`Error when swapping`);
+          });
+      }).catch(e => {
+        setSwapButtonLoad(false);
+    
+        setClickedSwap(false);
+        setShowErrorMessage(true);
+        setErrorMessage(`Error when swapping`);
+      });
+  }).catch(e => {
+    setSwapButtonLoad(false);
+    setClickedSwap(false);
+    setShowErrorMessage(true);
+    setErrorMessage(`Error when swapping`);
+  }); 
+
+    } catch (error) {
+      setSwapButtonLoad(false);
+      console.error(error);
+      setClickedSwap(false);
+      setShowErrorMessage(true);
+      setErrorMessage(`Error, ${error}`);
+    }
+    
+  };
+
+  const onSwapModalClose = async (event: any) => {
+    try {
+
+    setClickedSwap(false);
+    setSwapButtonLoad(false);
+
+    
+    } catch (error) {
+      setSwapButtonLoad(false);
+      console.error(error);
+      setClickedSwap(false);
+      setShowErrorMessage(true);
+      setErrorMessage(`Error, ${error}`);
+    }
+    
+  };
+
+  const onSwapClick = async (event: any) => {
+    try {
+
+    setClickedSwap(true);
+    setSwapButtonLoad(true);
+
+    
+    } catch (error) {
+      setSwapButtonLoad(false);
+      console.error(error);
+      setClickedSwap(false);
+      setShowErrorMessage(true);
+      setErrorMessage(`Error, ${error}`);
+    }
+    
+  };
+
   const onRedeemClick = async (event: any) => {
     try {
+
+      if(!elusiv) {
+      
+          const getElusiv = async () => {
+            if (publicKey && signMessage) {
+              const encodedMessage = new TextEncoder().encode(SEED_MESSAGE);
+              const seed = await signMessage(encodedMessage);
+      
+              let rpcHost =
+              "https://solana.coin.ledger.com/";
+      
+              const connection = new Connection(rpcHost, {
+                commitment: "confirmed",
+                confirmTransactionInitialTimeout: 250000,
+              });
+              
+              const elusivInstance = await Elusiv.getElusivInstance(seed, publicKey, connection, 'mainnet-beta')
+              setElusiv(elusivInstance);
+            }
+          }
+          getElusiv()
+      
+          return () => {
+            setElusiv(undefined)
+          }
+      
+      }
       setbuttonIsLoading(true);
 
       const tradingCodeInput = tradingCodeInputRef.current;
@@ -776,15 +956,27 @@ const OTC = (props: TradeProps) => {
   const checkEligibility = () => {
     if (!wallet) {
       return (
-        <CenteredContainer>
-        <ConnectButton className="wallet-button">Connect Wallet</ConnectButton>
-       </CenteredContainer>
+        <WalletMultiButton />
       );
     }
 
-    ////<BounceLoader color={'white'} loading={true} size={10} />
     return (
       <div className="block-list__btn-container">
+
+                <button
+                    type="button"
+                    className="block-list__btn custom-btn has-box-shadow-small button-spacer" 
+                 
+                    disabled={SwapButtonIsLoading} 
+                    onClick={onSwapClick}
+                  >
+                    {SwapButtonIsLoading ? (
+                      <div className="loading-circle"></div>
+                    ) : (
+                      'Fast Swap'
+                    )}
+                  </button>
+
       <button
         type="button"
         className="block-list__btn custom-btn has-box-shadow-small"
@@ -836,24 +1028,31 @@ const OTC = (props: TradeProps) => {
         </Snackbar>
         <header className="header">
           <Nav />
+
+          
           <h1 className="heading-main is-flex-justify-center is-uppercase u-margin-top_large">
-          <div className="heading-container">
+       
             <img src="../cloakzk.png" alt="CloakZK" width="150" height="160" />
             <span className="heading-text">
             OTC Trading
             </span>
-          </div>
+         
         </h1>
-          <div className="is-flex is-flex-justify-center">
+          <div className="wallet-main-container">
             {!wallet ? (
               <p className="pb-5">No Wallet Connected</p>
             ) : (
               <p className="pb-5">
-                Wallet {shortenAddress(wallet.publicKey.toBase58() || "")}
+                Wallet {shortenAddress(wallet.publicKey.toBase58())}
               </p>
             )}
           </div>
+
+          
         </header>
+
+   
+        
           <div className="content-wrapper">
           <div className="row">
               <div className="block-list-wrapper has-box-shadow">
@@ -861,10 +1060,10 @@ const OTC = (props: TradeProps) => {
               <div className="block-list mt-4 mb-4">
               <div className="centered-image">
                 <img
-                  src="../trade2.png"
-                  alt="Solana"
-                  width="140"
-                  height="140"
+                  src="../trade.gif"
+                  alt="Trade"
+                  width="240"
+                  height="240"
                 />
               </div>
                 <div className="mt-3 mb-3 text-center">
@@ -882,7 +1081,7 @@ const OTC = (props: TradeProps) => {
                 type="text"
                 ref={tradingCodeInputRef}
                 className="trading-code-input"
-                placeholder="Enter your Trading Code"
+                placeholder="Enter your Trade Code"
               />
                <div className="small-text">
                   By Using this service you agree to our <a href="/tos">Terms of Service</a>.
@@ -902,15 +1101,88 @@ const OTC = (props: TradeProps) => {
               </div>
             </div>
 
+     
+
+
+            {clickedSwap && (
+  <div className="swap-modal">
+     <button className="close-button" onClick={onSwapModalClose}>Close</button>
+    <h1>FAST SWAP</h1>
+    <div className="token-list">
+      <div className="token-select">
+        <select
+          value={selectedToken}
+          onChange={(e) => setSelectedToken(e.target.value)}
+          className={`swap-menu ${selectedToken ? 'selected' : ''}`}
+        >
+          {tokenList.map((token) => (
+            <option key={token.id} value={token.name}>
+              {token.name}
+            </option>
+          ))}
+        </select>
+        {selectedToken && (
+          <div className="token-icon">
+            <img
+              className="swap-icon-left"
+              src={
+                selectedToken === 'USDC'
+                  ? '../usdc.png' // Hardcoded path for USDC
+                  : selectedToken === 'USDT'
+                  ? '../usdt.png' // Hardcoded path for USDT
+                  : '' // Empty string for other tokens
+              }
+              alt={selectedToken}
+            />
+            <div className="for"> ↓ </div>
+            <img
+              className="swap-icon-right"
+              src={'../solana.png' /* Hardcoded path for SOL */}
+              alt="SOL"
+            />
+          </div>
+        )}
+      </div>
+      {selectedToken && (
+        <div>
+        <input
+        type="number"
+        min="0.05"
+        placeholder="Amount to Swap"
+        value={amountToSwap}
+        className={`swap-menu ${selectedToken ? 'selected' : ''}`}
+        onChange={(e) => {
+          const inputValue = e.target.value;
+          if (inputValue === ''  || (!isNaN(parseFloat(inputValue)))) {
+            // Check if the input is either empty or a valid number greater than or equal to 0.05
+            handleSwapAmountChange(parseFloat(inputValue));
+            }
+          }}
+          />
+          <p>
+          {solAfterSwap === 0 ? (
+          // Display your GIF as a loading animation
+          <img src="LoadSwap.gif" className="swap-animation" alt="Loading..." />
+        ) : (
+          `${amountToSwap} ${selectedToken} → ${solAfterSwap} SOL`
+        )}
+          </p>
+          {/* Replace the following with your confirmation logic */}
+          <button onClick={performSwap} >Confirm Swap</button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
         {open && (
         <Modal
-          open={open}
-          onClose={handleCloseRedeem}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
+        open={open}
+        onClose={null} // Set onClose to null to prevent modal from closing when clicking outside
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
         >
           <Fade in={open}>
             <Box className="dashboard-modal has-box-shadow">
@@ -1018,41 +1290,38 @@ const OTC = (props: TradeProps) => {
                     <input
                       type="number"
                       className="data-input"
-                      placeholder="Amount in SOL"
+                      placeholder="Amount (SOL)"
                       onChange={(event) => handleSOLAmountChange(event.target.value)}
-                      min="0" 
-                      />
-                      <img
-                        src="../dots.png"
-                        alt="Settings"
-                        className="settings-icon"
-                        onClick={() => toggleInfoBox("amount")}
+                      min="0.025" 
                       />
 
-                  <button
-                      type="button"
-                      className="block-list__btn new-trade-button"
-                      onClick={startNewTrade}
-                      disabled={TradeButtonIsLoading}
-                    >
-                      {TradeButtonIsLoading ? (
-                        <div className="loading-circle"></div>
-                      ) : (
-                        'Start Trade'
-                      )}
-                    </button>
-                  </div>
-                  {isConfirmationInfoOpen  && (
-                    <div className="info-box">
-                      <p>This allows you to specify the amount of SOL you want to trade.</p>
-                      <p>Make sure to double-check the amount before confirming the trade.</p>
-                    </div>
-                  )}
+                    
+
+                    <button
+                    type="button"
+                    className="block-list__btn new-trade-button"
+                    onClick={startNewTrade}
+                    disabled={TradeButtonIsLoading}
+                  >
+                    {TradeButtonIsLoading ? (
+                      <div className="loading-circle"></div>
+                    ) : (
+                      'Start Trade'
+                    )}
+                  </button>
+
+                 
+                </div>
+                  
                     </div>
                     </div>
                     )}
+
+                    
                  
                   </div>
+
+                  
                   </div>
                 )}
               </div>
