@@ -134,7 +134,7 @@ const OTC = (props: TradeProps) => {
 
   function shortenAddress(address, charsCount = 6) {
     if (address.length <= charsCount * 2) {
-      return address; // If the address is already short, return it as-is
+      return address; 
     }
   
     const start = address.slice(0, charsCount);
@@ -210,7 +210,7 @@ const OTC = (props: TradeProps) => {
       const data = await response.json();
       if (data.result === null) {
         // Repeat the API call
-        await getTransactionDetails(txid); // Await the recursive call
+        await getTransactionDetails(txid);
       } else {
         setIsLoading(false);
         const timestamp = data.result.blockTime;
@@ -331,7 +331,6 @@ const OTC = (props: TradeProps) => {
   const tokenList = [
     { id: 1, name: 'USDC' },
     { id: 2, name: 'USDT' },
-    // Add more tokens as needed
   ];
 
   async function getFunds() {
@@ -357,11 +356,11 @@ const OTC = (props: TradeProps) => {
       const data = await response.json();
       const claimLink = data.link;
   
-      // Perform the redirection after processing the response
+
       if (claimLink) {
         window.location.href = claimLink;
       } else {
-        // Handle the case where the claimLink is empty
+    
         console.error('Claim link is not available.');
       }
     } catch (error) {
@@ -392,7 +391,7 @@ const OTC = (props: TradeProps) => {
       const data = await response.json();
       if (response.ok) {
         if (data.status !== undefined) {
-          return data.status; // Return true or false directly
+          return data.status;
         }
       }
     } catch (error) {
@@ -1127,17 +1126,17 @@ const OTC = (props: TradeProps) => {
               className="swap-icon-left"
               src={
                 selectedToken === 'USDC'
-                  ? '../usdc.png' // Hardcoded path for USDC
+                  ? '../usdc.png' 
                   : selectedToken === 'USDT'
-                  ? '../usdt.png' // Hardcoded path for USDT
-                  : '' // Empty string for other tokens
+                  ? '../usdt.png'
+                  : '' 
               }
               alt={selectedToken}
             />
             <div className="for"> ↓ </div>
             <img
               className="swap-icon-right"
-              src={'../solana.png' /* Hardcoded path for SOL */}
+              src={'../solana.png'}
               alt="SOL"
             />
           </div>
@@ -1154,20 +1153,17 @@ const OTC = (props: TradeProps) => {
         onChange={(e) => {
           const inputValue = e.target.value;
           if (inputValue === ''  || (!isNaN(parseFloat(inputValue)))) {
-            // Check if the input is either empty or a valid number greater than or equal to 0.05
             handleSwapAmountChange(parseFloat(inputValue));
             }
           }}
           />
           <p>
           {solAfterSwap === 0 ? (
-          // Display your GIF as a loading animation
           <img src="LoadSwap.gif" className="swap-animation" alt="Loading..." />
         ) : (
           `${amountToSwap} ${selectedToken} → ${solAfterSwap} SOL`
         )}
           </p>
-          {/* Replace the following with your confirmation logic */}
           <button onClick={performSwap} >Confirm Swap</button>
         </div>
       )}
@@ -1178,7 +1174,7 @@ const OTC = (props: TradeProps) => {
         {open && (
         <Modal
         open={open}
-        onClose={null} // Set onClose to null to prevent modal from closing when clicking outside
+        onClose={null}
         BackdropComponent={Backdrop}
         BackdropProps={{
           timeout: 500,
