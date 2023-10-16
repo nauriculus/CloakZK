@@ -1,6 +1,18 @@
-# CloakZK
-- Your gateway to private OTC trading on Solana. With zero-knowledge proofs (zk proofs) using the Elusiv SDK, this tool provides an unparalleled level of privacy and security for your OTC trades.
-> Video Demo: https://youtu.be/42i8pRTigG0
+<div align="center">
+ <img src="https://binaramics.com:9000/cloakzk.png" alt="Logo" width="240" style="background-color: black;">
+ 
+  <p align="center">
+    <br>
+    Your gateway to private OTC trading on Solana. With zero-knowledge proofs (zk proofs) using the Elusiv SDK, this tool provides an unparalleled level of privacy and security for your OTC trades.
+    <br />
+    <br />
+    <a href="https://binaramics.com:9000">Live Demo</a>
+    ·
+    <a href="https://twitter.com/Binaramics">Follow Us X</a>
+     ·
+    <a href="https://www.youtube.com/watch?v=27dB5sMg9cA">Demo Video</a>
+  </p>
+</div>
 
 ## Table Of Contents
 
