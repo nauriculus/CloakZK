@@ -1,5 +1,5 @@
 <div align="center">
- <img src="https://media.discordapp.net/attachments/1161769361334341664/1163374655990677554/cloakzk.png?ex=653f5814&is=652ce314&hm=90b18ac7f892af82219603da186ebf50e4871fddbc2cd2e0f07b2ddbee22ad3c&=&width=800&height=800)" alt="Logo" width="240" style="background-color: black;">
+ <img src="https://media.discordapp.net/attachments/1161769361334341664/1163374655990677554/cloakzk.png" alt="Logo" width="240" style="background-color: black;">
  
   <p align="center">
     <br>
