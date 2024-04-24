@@ -1,6 +1,7 @@
 <div align="center">
   <p align="center">
     <br>
+    **Please not that this repo is outdated as Elusiv was shutdown.**
     Your gateway to private OTC trading on Solana. With zero-knowledge proofs (zk proofs) using the Elusiv SDK, this tool provides an unparalleled level of privacy and security for your OTC trades.
     <br />
     <br />
